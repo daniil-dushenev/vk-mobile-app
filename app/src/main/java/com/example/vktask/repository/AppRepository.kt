@@ -1,27 +1,25 @@
 package com.example.vktask.repository
 
-import com.example.vktask.model.AppInfo
-import com.example.vktask.R
+import com.example.vktask.data.AppDao
+import com.example.vktask.data.AppEntity
 
-object AppRepository {
+class AppRepository(private val dao: AppDao) {
 
-    // Заглушечный список приложений
-    private val apps = mutableListOf(
-        AppInfo(1, "Calculator Pro", "Мощный калькулятор", R.mipmap.ic_launcher, false),
-        AppInfo(2, "Weather Now", "Погода в реальном времени", R.mipmap.ic_launcher, false),
-        AppInfo(3, "Notes X", "Заметки и списки дел", R.mipmap.ic_launcher, false),
-        AppInfo(4, "MusicStream", "Музыка онлайн", R.mipmap.ic_launcher, false)
-    )
+    suspend fun getApps(): List<AppEntity> = dao.getAll()
 
-    fun getApps(): List<AppInfo> = apps
+    suspend fun getApp(id: Int): AppEntity? = dao.getById(id)
 
-    fun getAppById(id: Int): AppInfo? = apps.find { it.id == id }
-
-    fun install(id: Int) {
-        getAppById(id)?.installed = true
+    suspend fun toggleInstall(id: Int) {
+        val app = dao.getById(id) ?: return
+        dao.update(app.copy(installed = !app.installed))
     }
 
-    fun uninstall(id: Int) {
-        getAppById(id)?.installed = false
+    suspend fun seedInitialData() {
+        if (dao.getAll().isEmpty()) {
+            dao.insert(AppEntity(1, "Calculator Pro", "Мощный калькулятор"))
+            dao.insert(AppEntity(2, "Notes X", "Записки и списки"))
+            dao.insert(AppEntity(3, "MusicStream", "Онлайн музыка"))
+            dao.insert(AppEntity(4, "Weather Now", "Погода сейчас"))
+        }
     }
 }

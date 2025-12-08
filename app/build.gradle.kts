@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.kotlin.kapt")
 }
+
 
 android {
     namespace = "com.example.vktask"
@@ -37,7 +40,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
     }
 }
 
@@ -46,8 +49,22 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Compose BOM
+    implementation(platform(libs.androidx.compose.bom))
+
+    // Compose UI + Material3 + Runtime + Navigation + ViewModel
+    implementation(libs.bundles.compose)
+
+    // Tooling (только debug)
+    debugImplementation(libs.androidx.compose.tooling)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
 }
